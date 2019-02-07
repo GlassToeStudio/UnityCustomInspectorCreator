@@ -363,7 +363,10 @@ namespace GTS.InspectorGeneration.Utilities
 
         private void Dedent()
         {
-            tabLevel = tabLevel.Remove(tabLevel.Length - 1);
+            if(tabLevel.Length > 0)
+            {
+                tabLevel = tabLevel.Remove(tabLevel.Length - 1);
+            }
         }
 
         private string GetVarName(string className)
