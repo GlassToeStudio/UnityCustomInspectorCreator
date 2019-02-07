@@ -23,6 +23,14 @@ namespace GTS.InspectorGeneration.Utilities
             AssetDatabase.Refresh();
         }
 
+        public void WriteToFile(string path, string className, string content)
+        {
+            File.WriteAllText($"{path}/{className}_Converted.txt", content);
+            //MessageLogger.SuccessEditorFileWrite(path, className);
+
+            AssetDatabase.Refresh();
+        }
+
         private static void CreateEditorFolder(string path)
         {
             if (!AssetDatabase.IsValidFolder($"{path}/Editor"))
