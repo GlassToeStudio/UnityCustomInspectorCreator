@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace GTS.Test
 {
@@ -6,51 +7,51 @@ namespace GTS.Test
 	public class TestClassEditor : Editor
 	{
 		private TestClass _testClass;
-		SerializedProperty _m_GameObject;
-		SerializedProperty _m_Transform;
+		SerializedProperty _aGameObject;
+		SerializedProperty _aTransform;
 
 		private void OnEnable()
 		{
 			_testClass = (TestClass)target;
-			_m_GameObject = serializedObject.FindProperty("m_GameObject");
-			_m_Transform = serializedObject.FindProperty("m_Transform");
+			_aGameObject = serializedObject.FindProperty("aGameObject");
+			_aTransform = serializedObject.FindProperty("aTransform");
 		}
 
 		public override void OnInspectorGUI()
 		{
 			// Fields
-			_testClass.m_Bounds = EditorGUILayout.BoundsField("m_Bounds", _testClass.m_Bounds);
-			_testClass.m_BoundsInt = EditorGUILayout.BoundsIntField("m_BoundsInt", _testClass.m_BoundsInt);
-			_testClass.m_Color = EditorGUILayout.ColorField("m_Color", _testClass.m_Color);
-			_testClass.m_Curve = EditorGUILayout.CurveField("m_Curve", _testClass.m_Curve);
-			_testClass.m_Double = EditorGUILayout.DoubleField("m_Double", _testClass.m_Double);
+			_testClass.aBounds = EditorGUILayout.BoundsField("aBounds", _testClass.aBounds);
+			_testClass.aBoundsInt = EditorGUILayout.BoundsIntField("aBoundsInt", _testClass.aBoundsInt);
+			_testClass.aColor = EditorGUILayout.ColorField("aColor", _testClass.aColor);
+			_testClass.aCurve = EditorGUILayout.CurveField("aCurve", _testClass.aCurve);
+			_testClass.aDouble = EditorGUILayout.DoubleField("aDouble", _testClass.aDouble);
 			// Could also use: DelayedDoubleField.
-			_testClass.m_anEnum = (AnEnum)EditorGUILayout.EnumPopup("m_anEnum", _testClass.m_anEnum);
+			_testClass.aanEnum = (AnEnum)EditorGUILayout.EnumPopup("aanEnum", _testClass.aanEnum);
 			// Also could use EnumFlagsField.
-			_testClass.m_Float = EditorGUILayout.FloatField("m_Float", _testClass.m_Float);
+			_testClass.aFloat = EditorGUILayout.FloatField("aFloat", _testClass.aFloat);
 			// Could also use: DelayedFloatField.
-			EditorGUILayout.PropertyField(_m_GameObject, new GUIContent("M_ Game Object"), true);
-			_testClass.m_Int = EditorGUILayout.IntField("m_Int", _testClass.m_Int);
+			EditorGUILayout.PropertyField(_aGameObject, new GUIContent("A Game Object"), true);
+			_testClass.aInt = EditorGUILayout.IntField("aInt", _testClass.aInt);
 			// Could also use: DelayedIntField; IntPopup, IntSlider.
-			_testClass.m_Layer = EditorGUILayout.LayerField("m_Layer", _testClass.m_Layer);
-			_testClass.m_Long = EditorGUILayout.LongField("m_Long", _testClass.m_Long);
-			// Omitting m_SystemObject from code generation. No applicable entry for System.Object!
-			_testClass.m_String = EditorGUILayout.TextField("m_String", _testClass.m_String);
+			_testClass.aLayer = EditorGUILayout.LayerField("aLayer", _testClass.aLayer);
+			_testClass.aLong = EditorGUILayout.LongField("aLong", _testClass.aLong);
+			// Omitting aSystemObject from code generation. No applicable entry for System.Object!
+			_testClass.aString = EditorGUILayout.TextField("aString", _testClass.aString);
 			// Could also use: DelayedTextField.
-			_testClass.m_Bool = EditorGUILayout.Toggle("m_Bool", _testClass.m_Bool);
+			_testClass.aBool = EditorGUILayout.Toggle("aBool", _testClass.aBool);
 			// Could also use: ToggleLeft.
-			EditorGUILayout.PropertyField(_m_Transform, new GUIContent("M_ Transform"), true);
-			_testClass.m_Vector2 = EditorGUILayout.Vector2Field("m_Vector2", _testClass.m_Vector2);
-			_testClass.m_Vector2Int = EditorGUILayout.Vector2IntField("m_Vector2Int", _testClass.m_Vector2Int);
-			_testClass.m_Vector3 = EditorGUILayout.Vector3Field("m_Vector3", _testClass.m_Vector3);
-			_testClass.m_Vector3Int = EditorGUILayout.Vector3IntField("m_Vector3Int", _testClass.m_Vector3Int);
-			_testClass.m_Vector4 = EditorGUILayout.Vector4Field("m_Vector4", _testClass.m_Vector4);
+			EditorGUILayout.PropertyField(_aTransform, new GUIContent("A Transform"), true);
+			_testClass.aVector2 = EditorGUILayout.Vector2Field("aVector2", _testClass.aVector2);
+			_testClass.aVector2Int = EditorGUILayout.Vector2IntField("aVector2Int", _testClass.aVector2Int);
+			_testClass.aVector3 = EditorGUILayout.Vector3Field("aVector3", _testClass.aVector3);
+			_testClass.aVector3Int = EditorGUILayout.Vector3IntField("aVector3Int", _testClass.aVector3Int);
+			_testClass.aVector4 = EditorGUILayout.Vector4Field("aVector4", _testClass.aVector4);
 			// Omitting SomeQuaternion from code generation. No applicable entry for UnityEngine.Quaternion!
 
 			// Properties
-			_testClass.m_IntProperty = EditorGUILayout.IntField("m_IntProperty", _testClass.m_IntProperty);
+			_testClass.aIntProperty = EditorGUILayout.IntField("aIntProperty", _testClass.aIntProperty);
 			// Could also use: DelayedIntField; IntPopup, IntSlider.
-			_testClass.m_StringProperty = EditorGUILayout.TextField("m_StringProperty", _testClass.m_StringProperty);
+			_testClass.aStringProperty = EditorGUILayout.TextField("aStringProperty", _testClass.aStringProperty);
 			// Could also use: DelayedTextField.
 
 			// Buttons
