@@ -1,5 +1,5 @@
-﻿using UnityEditor;
-using System.IO;
+﻿using System.IO;
+using UnityEditor;
 
 namespace GTS.InspectorGeneration.Data
 {
