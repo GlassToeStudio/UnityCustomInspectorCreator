@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,13 +10,13 @@ namespace GTS.InspectorGeneration.Utilities
 {
     public class Generator
     {
-        private string tabLevel;
+        private string tabLevel = "";
         private bool didHaveProps;
         private string classTypeField;
         private string onEnableBody;
 
         public string[] Generate(Type type, string fullPath, string className)
-        {     
+        {
             string varName = GetVarName(className);
 
             string usings = GenerateUsings(fullPath);
@@ -70,15 +70,37 @@ namespace GTS.InspectorGeneration.Utilities
                     // Could add unintended using statements, example here in the StreamReader.
                     if (line.Contains("using") && line.Contains(";")) //Test a 'using' fix.
                     {
-                        sb.Append($"{line}\n");
+                        sb.Append(string.Format("{0}\n", line));
                     }
                 }
             }
             return sb.ToString();
         }
 
+        public string GetNameSpace(string path)
+        {
+            //Debug.Log("generating usings");
+
+            string nameSpace = String.Empty;
+            using (var reader = new StreamReader(path))
+            {
+                string line;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    // Could add unintended using statements, example here in the StreamReader.
+                    if (line.Contains("namespace")) //Test a 'using' fix.
+                    {
+                        nameSpace = line.Replace("namespace", "").Replace("{", "").Trim();
+                    }
+                }
+            }
+            return nameSpace;
+        }
+
         private string GenerateNamespaceBegin(Type type)
         {
+            //Debug.Log("generating NameSpace");
             string myNamespace = type.Namespace;
             if (string.IsNullOrEmpty(myNamespace))
             {
@@ -87,61 +109,70 @@ namespace GTS.InspectorGeneration.Utilities
             else
             {
                 Indent();
-                return $"\nnamespace {myNamespace}\n{{";
+                return ("\nnamespace " + myNamespace + "\n{");
             }
         }
 
         private string GenerateInspectorAttribute(string className)
         {
-            return $"\n{tabLevel}[CustomEditor(typeof({className}))]\n";
+            //Debug.Log("generating Inspector Attribute");
+
+            return string.Format("\n{0}[CustomEditor(typeof({1}))]\n", tabLevel, className);
         }
 
         private string GenerateClassDeclarationBegin(string className)
         {
-            return $"{tabLevel}public class {className}Editor : Editor\n{tabLevel}{{\n";
+            //Debug.Log("generating Class Declaration Begin");
+
+            return (tabLevel + "public class " + className + "Editor : Editor\n" + tabLevel + "{\n");
         }
 
         // Members
         private string GenerateClassTypeMember(string className, string varName)
         {
-            Indent();
-            return $"{tabLevel}private {className} {varName};\n";
+            //Debug.Log("generating Class Type Member");
+            return (string.Format("{0}private {1} {2}; \n", tabLevel, className, varName));
         }
 
         // OnEnable
         private string GenerateOnEnableBegin()
         {
-            string onEnableStart = $"\n{tabLevel}private void OnEnable()\n";
-            string openBrace = $"{tabLevel}{{\n";
+            //Debug.Log("generating OnEnable Begin");
+            string onEnableStart = (string.Format("\n{0}private void OnEnable()\n", tabLevel));
+            string openBrace = (tabLevel + "{\n");
 
-            return $"{onEnableStart}{openBrace}";
+            return (string.Format("{0}{1}", onEnableStart, openBrace));
         }
 
         private string GenerateOnEnableBody(string varName, string className)
         {
+            //Debug.Log("generating OnEnable Body");
             Indent();
-            string body = $"{tabLevel}{varName} = ({className})target;\n";
+            string body = string.Format("{0}{1} = ({2})target; \n", tabLevel, varName, className);
             Dedent();
-            return $"{body}";
+            return string.Format("{0}", body);
         }
 
         private string GenerateOnEnableEnd()
         {
-            string closeBrace = $"{tabLevel}}}\n\n";
-            return $"{closeBrace}";
+            //Debug.Log("generating OnEnable End");
+            string closeBrace = tabLevel + "}\n\n";
+            return string.Format("{0}", closeBrace);
         }
 
         //OnInspectorGUI
         private string GenerateOnInspectorGUIBegin()
         {
-            return $"{tabLevel}public override void OnInspectorGUI()\n{tabLevel}{{\n";
+            //Debug.Log("generating OnInspectorGUI Begin");
+            return (tabLevel + "public override void OnInspectorGUI()\n" + tabLevel + "{\n");
         }
 
         private string GenerateOnInspectorGUIBodyFields(Type type, string varName)
         {
+            //Debug.Log("generating OnInspectorGUI Body Fields");
             Indent();
 
-            StringBuilder sb = new StringBuilder($"{tabLevel}// Fields\n");
+            StringBuilder sb = new StringBuilder(string.Format("{0}// Fields\n", tabLevel));
 
             BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
@@ -156,7 +187,9 @@ namespace GTS.InspectorGeneration.Utilities
 
         private string GenerateOnInspectorGUIBodyProperties(Type type, string varName)
         {
-            StringBuilder sb = new StringBuilder($"\n{tabLevel}// Properties\n");
+            //Debug.Log("generating OnInspectorGUI Body Properties");
+
+            StringBuilder sb = new StringBuilder(string.Format("\n{0}// Properties\n", tabLevel));
 
             BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
@@ -171,7 +204,9 @@ namespace GTS.InspectorGeneration.Utilities
 
         private string GenerateOnInspectorGUIBodyMethodButtons(Type type, string varName)
         {
-            StringBuilder sb = new StringBuilder($"\n{tabLevel}// Buttons");
+            //Debug.Log("generating OnInspectorGUI Body Buttons");
+
+            StringBuilder sb = new StringBuilder(string.Format("\n{0}// Buttons", tabLevel));
 
             BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
 
@@ -185,13 +220,13 @@ namespace GTS.InspectorGeneration.Utilities
                 {
                     MessageLogger.LogAttributeType(a);
 
-                    string buttonStart = $"\n{tabLevel}if(GUILayout.Button(\"{GetLabelName(m.Name)}\"))\n{tabLevel}{{\n";
+                    string buttonStart = ("\n" + tabLevel + "if(GUILayout.Button(\"" + GetLabelName(m.Name) + ")\"))\n" + tabLevel + "{\n");
                     Indent();
-                    string buttonBody = $"{tabLevel}{varName}.{m.Name}();\n";
+                    string buttonBody = string.Format("{0}{1}.{2}(); \n", tabLevel, varName, m.Name);
                     Dedent();
-                    string buttonEnd = $"{tabLevel}}}\n";
+                    string buttonEnd = tabLevel + "}\n";
 
-                    sb.Append($"{buttonStart}{buttonBody}{buttonEnd}");
+                    sb.Append(string.Format("{0}{1}{2}", buttonStart, buttonBody, buttonEnd));
 
                 }
             }
@@ -204,20 +239,20 @@ namespace GTS.InspectorGeneration.Utilities
             string result = string.Empty;
             if (didHaveProps)
             {
-                result = $"\n{tabLevel}serializedObject.ApplyModifiedProperties();\n";
+                result = string.Format("\n{0}serializedObject.ApplyModifiedProperties(); \n", tabLevel);
             }
 
             Dedent();
 
-            result = $"{result}{tabLevel}}}\n";
+            result = result + tabLevel + "}\n";
             return result;
         }
-        
+
         // Finialize
         private string GenerateClassDeclarationEnd()
         {
             Dedent();
-            return $"{tabLevel}}}\n";
+            return tabLevel + "}\n";
         }
 
         private string GenerateNamespaceEnd(Type type)
@@ -299,10 +334,10 @@ namespace GTS.InspectorGeneration.Utilities
             didHaveProps = true;
 
             string ammendMemberDeclarations = AmmendMemberDeclarations(name);
-            classTypeField = $"{classTypeField}{ammendMemberDeclarations}";
+            classTypeField = string.Format("{0}{1}", classTypeField, ammendMemberDeclarations);
 
             string ammendOnEnable = AmmendOnEnable(name);
-            onEnableBody = $"{onEnableBody}{ammendOnEnable}";
+            onEnableBody = string.Format("{0}{1}", onEnableBody, ammendOnEnable);
 
             return GenerateEditorGUILayoutForSerializedProperty(name);
         }
@@ -311,7 +346,7 @@ namespace GTS.InspectorGeneration.Utilities
         // A special case
         private string GenerateEditorGUILayoutEnumPopup(string varName, string name, string type)
         {
-            string result = $"{tabLevel}{varName}.{name} = ({type.Split('.').Last()})EditorGUILayout.EnumPopup(\"{name}\", {varName}.{name});\n{tabLevel}// Also could use EnumFlagsField.\n";
+            string result = string.Format("{0}{1}.{2} = ({3})EditorGUILayout.EnumPopup(\"{2}\", {1}.{2}); \n{0}// Also could use EnumFlagsField.\n", tabLevel, varName, name, type.Split('.').Last());
             return result;
         }
         // Default
@@ -321,20 +356,20 @@ namespace GTS.InspectorGeneration.Utilities
             string comment = LookUpComments(type);
             if (!string.IsNullOrEmpty(comment))
             {
-                toAdd = $"{tabLevel}{comment}";
+                toAdd = string.Format("{0}{1}", tabLevel, comment);
             }
-            string r = $"{tabLevel}{varName}.{name} = EditorGUILayout.{result}(\"{name}\", {varName}.{name});\n{toAdd}";
+            string r = string.Format("{0}{1}.{2} = EditorGUILayout.{3}(\"{2}\", {1}.{2}); \n{4}", tabLevel, varName, name, result, toAdd);
             return r;
         }
         // A special case
         private string GenerateEditorGUILayoutForSerializedProperty(string name)
         {
-            return $"{tabLevel}EditorGUILayout.PropertyField({GetVarName(name)}, new GUIContent(\"{GetLabelName(name)}\"), true);\n";
+            return string.Format("{0}EditorGUILayout.PropertyField({1}, new GUIContent(\"{2}\"), true); \n", tabLevel, GetVarName(name), GetLabelName(name));
         }
 
         private string GenerateErrorMessage(string name, string type)
         {
-            return $"{tabLevel}// Omitting {name} from code generation. No applicable entry for {type}!\n";
+            return string.Format("{0}// Omitting {1} from code generation. No applicable entry for {2}!\n", tabLevel, name, type);
         }
         #endregion
 
@@ -342,13 +377,13 @@ namespace GTS.InspectorGeneration.Utilities
         private string AmmendOnEnable(string name)
         {
             // m_IntProp = serializedObject.FindProperty("m_MyInt")
-            return $"{tabLevel}{GetVarName(name)} = serializedObject.FindProperty(\"{name}\");\n";
+            return string.Format("{0}{1} = serializedObject.FindProperty(\"{2}\"); \n", tabLevel, GetVarName(name), name);
         }
 
         private string AmmendMemberDeclarations(string name)
         {
             Dedent();
-            string result = $"{tabLevel}SerializedProperty {GetVarName(name)};\n";
+            string result = string.Format("{0}SerializedProperty {1}; \n", tabLevel, GetVarName(name));
             Indent();
 
             return result;
@@ -358,12 +393,12 @@ namespace GTS.InspectorGeneration.Utilities
         #region Helpers
         private void Indent()
         {
-            tabLevel = $"{tabLevel }\t";
+            tabLevel += "    ";
         }
 
         private void Dedent()
         {
-            if(tabLevel.Length > 0)
+            if (tabLevel.Length > 0)
             {
                 tabLevel = tabLevel.Remove(tabLevel.Length - 1);
             }
@@ -371,7 +406,7 @@ namespace GTS.InspectorGeneration.Utilities
 
         private string GetVarName(string className)
         {
-            return $"_{Char.ToLowerInvariant(className[0])}{className.Substring(1)}";
+            return string.Format("_{0}{1}", Char.ToLowerInvariant(className[0]), className.Substring(1));
         }
 
         private string GetLabelName(string name)
@@ -382,11 +417,11 @@ namespace GTS.InspectorGeneration.Utilities
             {
                 foreach (var s in split)
                 {
-                    result = $"{result} {s}";
+                    result = string.Format("{0} {1}", result, s);
                 }
 
                 result = result.Trim();
-                result = $"{Char.ToUpperInvariant(result[0])}{result.Substring(1)}";
+                result = string.Format("{0}{1}", Char.ToUpperInvariant(result[0]), result.Substring(1));
                 return result;
             }
 

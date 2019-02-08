@@ -1,4 +1,4 @@
-# UnityCustomInspectorCreator
+# UnityCustomInspectorCreator (.net 3.5 compatible)
 
 Quickly generate a custom inspector template to make customizing faster.
 

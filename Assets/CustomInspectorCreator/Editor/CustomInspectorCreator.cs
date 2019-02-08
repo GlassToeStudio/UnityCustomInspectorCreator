@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using GTS.InspectorGeneration.Data;
 using GTS.InspectorGeneration.Utilities;
+using System.Collections.Generic;
 
 namespace GTS.InspectorGeneration
 {
@@ -27,7 +28,11 @@ namespace GTS.InspectorGeneration
 
             MessageLogger.LogStartMessage(fileData.ClassName, isText);
 
-            Type type = new Compiler().GetTypeForCompiledClassAtPath(fileData.FullPath);
+            //Type type = new Compiler().GetTypeForCompiledClassAtPath(fileData.FullPath);
+            Generator generator = new Generator();
+            string nameSpace = generator.GetNameSpace(fileData.FullPath);
+
+            Type type = new Compiler().GetTypeFromString(nameSpace + "."  + fileData.ClassName);
 
             if (type == null)
             {
@@ -39,7 +44,7 @@ namespace GTS.InspectorGeneration
                 return;
             }
 
-            string[] generatedCode = new Generator().Generate(type, fileData.FullPath, fileData.ClassName);
+            string[] generatedCode = generator.Generate(type, fileData.FullPath, fileData.ClassName);
 
             string code = new Builder().Build(generatedCode);
 

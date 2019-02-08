@@ -2,11 +2,23 @@
 using System.Linq;
 using Microsoft.CSharp;
 using System.CodeDom.Compiler;
+using System.Reflection.Emit;
 
 namespace GTS.InspectorGeneration.Utilities
 {
     public class Compiler
     {
+        /// <summary>
+        /// Attempt to get the Type from the passed in string typeName.
+        /// </summary>
+        public Type GetTypeFromString(string typeName)
+        {
+            MessageLogger.LogType(typeName);
+            Type t = Type.GetType(typeName + ", Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            MessageLogger.LogType(t.ToString());
+            return t;
+        }
+
         /// <summary>
         /// Attempt to compile a csharp script (.cs) at the given path.
         /// <para>Succesfull compilation will result in the return of the class's Type, else return null.</para>
@@ -43,7 +55,9 @@ namespace GTS.InspectorGeneration.Utilities
 
             // Add all referenced assemblies
             parameters.ReferencedAssemblies.AddRange(
-                AppDomain.CurrentDomain.GetAssemblies().Where(item => !item.IsDynamic).Select(item => item.Location).ToArray());
+                AppDomain.CurrentDomain.GetAssemblies()
+                .Where(item => !(item.ManifestModule is ModuleBuilder))
+                .Select(item => item.Location).ToArray());
 
             return parameters;
         }

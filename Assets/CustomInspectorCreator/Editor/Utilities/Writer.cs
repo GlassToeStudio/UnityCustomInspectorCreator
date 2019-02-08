@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEditor;
 
 namespace GTS.InspectorGeneration.Utilities
@@ -11,12 +11,12 @@ namespace GTS.InspectorGeneration.Utilities
             {
                 CreateEditorFolder(path);
 
-                File.WriteAllText($"{path}/Editor/{className}Editor.cs", content);
+                File.WriteAllText(string.Format("{0}/Editor/{1}Editor.cs", path, className), content);
                 MessageLogger.SuccessTextFileWrite(path, className);
             }
             else
             {
-                File.WriteAllText($"{path}/{className}Editor.txt", content);
+                File.WriteAllText(string.Format("{0}/{1}Editor.txt", path, className), content);
                 MessageLogger.SuccessEditorFileWrite(path, className);
             }
 
@@ -25,7 +25,7 @@ namespace GTS.InspectorGeneration.Utilities
 
         public void WriteToFile(string path, string className, string content)
         {
-            File.WriteAllText($"{path}/{className}_Converted.txt", content);
+            File.WriteAllText(string.Format("{0}/{1}_Converted.txt", path, className), content);
             //MessageLogger.SuccessEditorFileWrite(path, className);
 
             AssetDatabase.Refresh();
@@ -33,9 +33,9 @@ namespace GTS.InspectorGeneration.Utilities
 
         private static void CreateEditorFolder(string path)
         {
-            if (!AssetDatabase.IsValidFolder($"{path}/Editor"))
+            if (!AssetDatabase.IsValidFolder(string.Format("{0}/{1}", path, "Editor")))
             {
-                AssetDatabase.CreateFolder($"{path}", "Editor");
+                AssetDatabase.CreateFolder(path, "Editor");
             }
         }
     }

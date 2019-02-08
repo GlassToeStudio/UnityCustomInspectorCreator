@@ -16,7 +16,7 @@ namespace GTS.Test
         public int aInt;
         public LayerMask aLayer;
         public long aLong;
-        public Object aUnityObject;
+        public UnityEngine.Object aUnityObject;
         public object aSystemObject;
         public string aString;
         public bool aBool;
@@ -37,7 +37,7 @@ namespace GTS.Test
 
         private void Start()
         {
-
+            //Debug.Log(GenerateOnEnableBegin());
         }
 
         [ContextMenu("Do A Thing")]
